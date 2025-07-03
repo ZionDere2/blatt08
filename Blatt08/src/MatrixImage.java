@@ -69,7 +69,11 @@ public class MatrixImage implements Image {
      */
     @Override
     public double contrast(Coordinate p0, Coordinate p1) throws InputMismatchException {
-        // TODO
+        if (p0.x < 0 || p0.x >= sizeX() || p0.y < 0 || p0.y >= sizeY() ||
+                p1.x < 0 || p1.x >= sizeX() || p1.y < 0 || p1.y >= sizeY()) {
+            throw new InputMismatchException();
+        }
+        return Math.abs(field[p0.x][p0.y] - field[p1.x][p1.y]);
     }
     
     /**
@@ -79,7 +83,14 @@ public class MatrixImage implements Image {
      */
     @Override
     public void removeVPath(int[] path) {
-        // TODO
+        int[][] newField = new int[sizeX() - 1][sizeY()];
+        for (int y = 0; y < sizeY(); y++) {
+            for (int x = 0; x < sizeX() - 1; x++) {
+                int xo = x < path[y] ? x : x + 1;
+                newField[x][y] = field[xo][y];
+            }
+        }
+        field = newField;
     }
 
     @Override

@@ -6,11 +6,37 @@ public class ShortestPathsTopological {
     private double[] dist;
 
     public ShortestPathsTopological(WeightedDigraph G, int s) {
-        // TODO
+        this.s = s;
+        parent = new int[G.V()];
+        dist = new double[G.V()];
+        for (int v = 0; v < G.V(); v++) {
+            parent[v] = -1;
+            dist[v] = Double.POSITIVE_INFINITY;
+        }
+        dist[s] = 0.0;
+        parent[s] = s;
+
+        TopologicalWD topo = new TopologicalWD(G);
+        topo.dfs(s);
+        if (topo.hasCycle()) {
+            throw new IllegalArgumentException("graph contains a cycle");
+        }
+        Stack<Integer> order = topo.order();
+        while (!order.isEmpty()) {
+            int v = order.pop();
+            for (DirectedEdge e : G.incident(v)) {
+                relax(e);
+            }
+        }
     }
 
     public void relax(DirectedEdge e) {
-        // TODO
+        int v = e.from();
+        int w = e.to();
+        if (dist[v] + e.weight() < dist[w]) {
+            dist[w] = dist[v] + e.weight();
+            parent[w] = v;
+        }
     }
 
     public boolean hasPathTo(int v) {
