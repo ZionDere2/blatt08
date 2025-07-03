@@ -75,7 +75,24 @@ public class ContentAwareImageResizing {
      * @return the Vertical Path with the least contrast
      */
     public int[] leastContrastImageVPath() {
-        // TODO
+        WeightedDigraph graph = makeVGraph();
+        int vSource = sx * sy;
+        int vTarget = sx * sy + 1;
+        ShortestPathsTopological spt = new ShortestPathsTopological(graph, vSource);
+        Stack<Integer> stack = spt.pathTo(vTarget);
+        if (stack == null) {
+            return null;
+        }
+        int[] path = new int[sy];
+        if (!stack.isEmpty()) {
+            stack.pop(); // remove target node
+            for (int y = sy - 1; y >= 0; y--) {
+                int node = stack.pop();
+                Coordinate c = nodeToCoordinate(node);
+                path[y] = c.x;
+            }
+        }
+        return path;
     }
     
     /** Removes a vertical path from the image
